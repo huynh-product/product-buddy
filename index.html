@@ -1,0 +1,1801 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Product Buddy — Product Management Kickstart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body: ['"DM Sans"', 'sans-serif'],
+      },
+      colors: {
+        ink:     '#1A0F2E',
+        cream:   '#F4F5F7',
+        line:    '#E5E7EB',
+        purple:  '#7C3AED',
+        violet:  '#5B21B6',
+        pink:    '#D946EF',
+        rose:    '#FCE7F3',
+        lavender:'#EEEAF5',
+        butter:  '#FEF3C7',
+        mint:    '#D1FAE5',
+        sky:     '#E0E7FF',
+        slate:   '#F1F3F5',
+      },
+    },
+  },
+}
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --ink:#1A0F2E; --cream:#F4F5F7; --line:#E5E7EB; --purple:#7C3AED;
+    --violet:#5B21B6; --pink:#D946EF; --rose:#FCE7F3; --lavender:#EEEAF5;
+    --butter:#FEF3C7; --mint:#D1FAE5; --sky:#E0E7FF; --slate:#F1F3F5;
+  }
+  html, body {
+    background: #fff; color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-weight: 400;
+    -webkit-font-smoothing: antialiased; letter-spacing: -0.01em;
+    overflow-x: clip;
+  }
+  html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+  ::selection { background: var(--purple); color: #fff; }
+
+  /* ---------- Typography ---------- */
+  .display { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+  .display-xl { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }
+  .body-md { font-family: 'DM Sans', sans-serif; font-weight: 400; }
+  .body-bold { font-family: 'DM Sans', sans-serif; font-weight: 600; }
+  .kicker { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+
+  .gradient-text {
+    background: linear-gradient(95deg, #7C3AED 0%, #D946EF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---------- Header ---------- */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    box-shadow: 0 4px 24px -10px rgba(26,15,46,0.08);
+    border-bottom-color: rgba(237,230,245,0.7);
+  }
+  .nav-link { font-weight: 500; font-size: 14px; color: var(--ink); opacity: 0.75; transition: opacity 0.2s ease; }
+  .nav-link:hover { opacity: 1; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14.5px;
+    letter-spacing: -0.005em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    white-space: nowrap; cursor: pointer; border: 0;
+    min-height: 44px;
+  }
+  .btn-primary {
+    background: linear-gradient(95deg, #7C3AED 0%, #D946EF 100%);
+    color: #fff;
+    box-shadow: 0 8px 24px -10px rgba(124,58,237,0.45);
+  }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 14px 36px -12px rgba(217,70,239,0.55); }
+  .btn-primary:active { transform: translateY(0) scale(0.98); }
+  .btn-ink { background: var(--ink); color: #fff; }
+  .btn-ink:hover { transform: translateY(-2px); background: #2A1B47; }
+  .btn-outline { background: #fff; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-outline:hover { background: var(--ink); color: #fff; }
+  .btn-ghost { background: var(--lavender); color: var(--violet); }
+  .btn-ghost:hover { background: #E9D5FF; }
+
+  /* ---------- Plain icon links (v1-style: no circular border) ---------- */
+  .icon-plain {
+    width: 38px; height: 38px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: rgba(26,15,46,0.55);
+    border-radius: 50%;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+  .icon-plain:hover { color: var(--ink); background: rgba(26,15,46,0.05); }
+
+  /* ---------- Lang pill (v1-style: bordered pill, no circle) ---------- */
+  .lang-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 14px; height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: rgba(26,15,46,0.7);
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .lang-pill:hover { background: rgba(26,15,46,0.04); color: var(--ink); border-color: rgba(26,15,46,0.2); }
+
+  /* ---------- Icon-only buttons (kept for testimonials nav etc.) ---------- */
+  .icon-btn {
+    width: 42px; height: 42px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--lavender); border-color: var(--purple); color: var(--violet); }
+
+  /* ---------- Card hover lift ---------- */
+  .lift {
+    transition: transform 0.35s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.35s ease;
+  }
+  .lift:hover { transform: translateY(-6px); }
+
+  /* ---------- Hero ---------- */
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle at 8% 20%, rgba(124,58,237,0.14) 0%, transparent 38%),
+      radial-gradient(circle at 92% 30%, rgba(99,102,241,0.14) 0%, transparent 38%),
+      radial-gradient(circle at 50% 100%, rgba(241,243,245,0.6) 0%, transparent 50%);
+  }
+  .hero-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(40px);
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+  }
+  .hero-blob.b1 { width: 280px; height: 280px; background: rgba(124,58,237,0.18); top: 10%; left: -5%; }
+  .hero-blob.b2 { width: 320px; height: 320px; background: rgba(99,102,241,0.16); bottom: -5%; right: -8%; }
+  .hero-blob.b3 { width: 180px; height: 180px; background: rgba(241,243,245,0.6); top: 40%; right: 30%; }
+
+  @keyframes float-bob {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes float-bob-slow {
+    0%, 100% { transform: translateY(0px) rotate(-3deg); }
+    50% { transform: translateY(-14px) rotate(3deg); }
+  }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(6deg); }
+  }
+  @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .float-bob { animation: float-bob 5s ease-in-out infinite; }
+  .float-bob-slow { animation: float-bob-slow 7s ease-in-out infinite; }
+  .wobble { animation: wobble 4s ease-in-out infinite; transform-origin: center; }
+  .spin-slow { animation: spin-slow 22s linear infinite; }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.25,0.1,0.25,1), transform 0.8s cubic-bezier(0.25,0.1,0.25,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.25,0.1,0.25,1), transform 0.7s cubic-bezier(0.25,0.1,0.25,1); }
+  .reveal-stagger.in > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0s; }
+  .reveal-stagger.in > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.06s; }
+  .reveal-stagger.in > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.12s; }
+  .reveal-stagger.in > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.18s; }
+  .reveal-stagger.in > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.24s; }
+  .reveal-stagger.in > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+  .reveal-stagger.in > *:nth-child(7) { opacity: 1; transform: translateY(0); transition-delay: 0.36s; }
+  .reveal-stagger.in > *:nth-child(8) { opacity: 1; transform: translateY(0); transition-delay: 0.42s; }
+  .reveal-stagger.in > *:nth-child(9) { opacity: 1; transform: translateY(0); transition-delay: 0.48s; }
+
+  /* ---------- Hero course card (tilted) ---------- */
+  .course-card {
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 30px 80px -20px rgba(124,58,237,0.25), 0 8px 20px -10px rgba(0,0,0,0.08);
+    border: 1px solid rgba(237,230,245,0.8);
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.2,0.8,0.2,1);
+    will-change: transform;
+  }
+  .course-card-tilt:hover { transform: perspective(1000px) rotateY(-2deg) rotateX(2deg) translateY(-4px); }
+
+  /* ---------- Pill badges floating in hero ---------- */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    font-weight: 500; font-size: 13px;
+    box-shadow: 0 10px 28px -14px rgba(26,15,46,0.18);
+  }
+
+  /* ---------- Section ---------- */
+  .section { padding: 80px 0; }
+  @media (min-width: 768px) { .section { padding: 120px 0; } }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--lavender);
+    color: var(--violet);
+    font-weight: 500; font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chip-pink { background: #FCE7F3; color: #9D2862; }
+  .chip-butter { background: var(--butter); color: #92400E; }
+  .chip-mint { background: var(--mint); color: #065F46; }
+  .chip-sky { background: var(--sky); color: #3730A3; }
+  .chip-slate { background: var(--slate); color: #334155; }
+
+  /* ---------- Horizontal scroller ---------- */
+  .scroller {
+    display: flex; gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 24px;
+    padding: 4px 24px 24px;
+    margin: 0 -24px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroller > * { scroll-snap-align: start; flex-shrink: 0; }
+  .scroller::-webkit-scrollbar { display: none; }
+  .scroller { scrollbar-width: none; }
+  @media (min-width: 1024px) {
+    .scroller { padding: 4px 0 24px; margin: 0; }
+  }
+
+  /* ---------- Audience colorful card ---------- */
+  .audience-card {
+    width: 280px;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  @media (min-width: 640px) { .audience-card { width: 320px; } }
+
+  /* ---------- Module accordion ---------- */
+  .module-row {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .module-row:hover { border-color: rgba(124,58,237,0.4); box-shadow: 0 8px 28px -14px rgba(124,58,237,0.15); }
+  .module-row[open] { border-color: var(--purple); box-shadow: 0 14px 36px -16px rgba(124,58,237,0.2); }
+  .module-row summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+  .module-row summary::-webkit-details-marker { display: none; }
+  .module-num {
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: var(--lavender);
+    color: var(--violet);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  .module-row[open] .module-num {
+    background: linear-gradient(95deg, #7C3AED, #D946EF);
+    color: #fff;
+  }
+  .module-title { flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.015em; line-height: 1.3; }
+  @media (min-width: 768px) { .module-title { font-size: 20px; } }
+  .module-chev {
+    flex-shrink: 0; width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+    color: var(--ink);
+  }
+  .module-row[open] .module-chev { background: var(--ink); color: #fff; transform: rotate(45deg); }
+  .module-body { padding: 0 24px 24px 84px; animation: slideDown 0.4s ease; }
+  @media (max-width: 640px) { .module-body { padding: 0 24px 20px; } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .module-body ul li { padding: 8px 0; color: rgba(26,15,46,0.78); font-size: 16px; line-height: 1.6; display: flex; align-items: flex-start; gap: 12px; }
+  .module-body ul li::before {
+    content: ""; flex-shrink: 0; margin-top: 11px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--pink);
+  }
+  .exercise-box {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(217,70,239,0.06));
+    border: 1px solid rgba(124,58,237,0.15);
+    font-size: 15px; color: rgba(26,15,46,0.82);
+    line-height: 1.55;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+
+  /* ---------- Skill card ---------- */
+  .skill-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 28px 24px;
+    height: 100%;
+    transition: transform 0.35s cubic-bezier(0.2,0.8,0.2,1), border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124,58,237,0.3);
+    box-shadow: 0 18px 40px -18px rgba(124,58,237,0.2);
+  }
+  .skill-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .skill-icon {
+    width: 48px; height: 48px;
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .skill-num {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+    color: rgba(124,58,237,0.18);
+    font-size: 36px; line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* ---------- Stat ticker ---------- */
+  .stat-num {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
+    line-height: 0.95; letter-spacing: -0.04em;
+  }
+
+  /* ---------- Mobile bottom CTA ---------- */
+  .mobile-cta {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+    display: flex; gap: 10px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .mobile-cta.show { transform: translateY(0); }
+  @media (min-width: 768px) { .mobile-cta { display: none; } }
+
+  /* ---------- Marquee chips ---------- */
+  .marquee {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  }
+  .marquee-track {
+    display: inline-flex; gap: 10px; white-space: nowrap;
+    animation: scroll-x 30s linear infinite;
+    width: max-content;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(26,15,46,0.4);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal-panel {
+    background: #fff; color: var(--ink);
+    border-radius: 28px;
+    max-width: 400px; width: 100%;
+    padding: 36px 28px;
+    transform: scale(0.92);
+    transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.4, 1);
+    text-align: center;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.3);
+  }
+  .modal-backdrop.open .modal-panel { transform: scale(1); }
+
+  /* ---------- Tag ---------- */
+  .tag {
+    display: inline-flex; align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    color: rgba(26,15,46,0.72);
+    font-size: 12.5px; font-weight: 500;
+  }
+
+  /* ---------- Pulse dot ---------- */
+  .pulse-dot { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.4); } }
+
+  /* ---------- Lang switch ---------- */
+  [data-i18n] { transition: opacity 0.18s ease; }
+  body.lang-changing [data-i18n] { opacity: 0.4; }
+
+  /* ---------- Wordmark ---------- */
+  .wordmark-logo {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7C3AED 0%, #D946EF 100%);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;
+    box-shadow: 0 6px 16px -6px rgba(124,58,237,0.45);
+  }
+
+  /* ---------- Tuition card ---------- */
+  .tuition-card {
+    background: linear-gradient(135deg, #1A0F2E 0%, #5B21B6 40%, #7C3AED 70%, #D946EF 100%);
+    background-size: 200% 200%;
+    animation: tuition-shift 14s ease-in-out infinite alternate;
+    color: #fff;
+    border-radius: 36px;
+    padding: 56px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) { .tuition-card { padding: 80px 64px; border-radius: 44px; } }
+  @keyframes tuition-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  .tuition-card::before {
+    content: ""; position: absolute;
+    width: 340px; height: 340px;
+    border-radius: 50%; filter: blur(80px);
+    background: rgba(217,70,239,0.5);
+    top: -120px; right: -120px;
+    animation: orb-drift 12s ease-in-out infinite alternate;
+  }
+  .tuition-card::after {
+    content: ""; position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%; filter: blur(80px);
+    background: rgba(124,58,237,0.5);
+    bottom: -100px; left: -100px;
+    animation: orb-drift 16s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes orb-drift {
+    0% { transform: translate(0,0) scale(1); }
+    100% { transform: translate(40px,-30px) scale(1.15); }
+  }
+
+  /* Tuition decorations */
+  .tuition-grid-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 75%);
+  }
+  .tuition-ribbon {
+    position: absolute;
+    top: 28px; right: -44px;
+    background: linear-gradient(95deg, #FCD34D 0%, #FBBF24 100%);
+    color: #78350F;
+    padding: 8px 56px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 12px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transform: rotate(35deg);
+    box-shadow: 0 6px 18px -6px rgba(252,211,77,0.5);
+    z-index: 5;
+  }
+  .tuition-feature {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.18);
+  }
+  .tuition-feature:last-child { border-bottom: 0; }
+  .tuition-feature .check {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    color: #FCD34D;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .price-glow {
+    background: linear-gradient(95deg, #fff 0%, #F0ABFC 50%, #fff 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+  .cta-pulse {
+    position: relative;
+  }
+  .cta-pulse::before {
+    content: ""; position: absolute; inset: -4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.4);
+    z-index: -1;
+    animation: cta-pulse-ring 2.2s ease-out infinite;
+  }
+  @keyframes cta-pulse-ring {
+    0% { transform: scale(0.96); opacity: 0.7; }
+    100% { transform: scale(1.2); opacity: 0; }
+  }
+  .floating-coin {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+    box-shadow: 0 8px 24px -6px rgba(252,211,77,0.5), inset 0 2px 6px rgba(255,255,255,0.4);
+  }
+
+  /* ---------- Sparkle ---------- */
+  .sparkle {
+    position: absolute;
+    color: #FCD34D;
+    animation: sparkle-twinkle 3s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.15s !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== LANG MODAL ============== -->
+<div id="lang-modal" class="modal-backdrop">
+  <div class="modal-panel">
+    <div class="text-3xl mb-2">👋</div>
+    <h3 class="display text-xl mb-2">Choose your language</h3>
+    <p class="text-sm text-ink/60 mb-7">Bạn muốn xem bằng ngôn ngữ nào?</p>
+    <div class="flex gap-3">
+      <button data-pick-lang="vi" class="flex-1 btn btn-primary justify-center">Tiếng Việt</button>
+      <button data-pick-lang="en" class="flex-1 btn btn-outline justify-center">English</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== MOBILE MENU REMOVED ============== -->
+
+<!-- ============== HEADER ============== -->
+<header id="site-header" class="nav">
+  <div class="max-w-[1200px] mx-auto flex items-center justify-between px-6 md:px-8 py-3">
+    <a href="#top" class="flex items-center gap-2.5">
+      <span class="wordmark-logo">P</span>
+      <span class="display text-xl">Product Buddy</span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8">
+      <a href="#audience" class="nav-link" data-i18n="nav.audience">Đối tượng</a>
+      <a href="#modules" class="nav-link" data-i18n="nav.modules">Chương trình</a>
+      <a href="#mentor" class="nav-link" data-i18n="nav.mentor">Mentor</a>
+      <a href="#tuition" class="nav-link" data-i18n="nav.tuition">Học phí</a>
+    </nav>
+
+    <div class="flex items-center gap-1 md:gap-1.5">
+      <a href="https://www.facebook.com/productbuddy.official" target="_blank" rel="noopener" class="icon-plain hidden md:inline-flex" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/huynhproduct/" target="_blank" rel="noopener" class="icon-plain hidden md:inline-flex" aria-label="LinkedIn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM8.3 18.3H5.7v-8h2.6v8zM7 9.2a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm11.3 9.1h-2.6V14c0-1-.4-1.7-1.3-1.7s-1.4.6-1.6 1.2c-.1.2-.1.5-.1.8v4h-2.6v-8h2.6v1.1c.3-.5 1-1.3 2.4-1.3 1.8 0 3.1 1.2 3.1 3.6v4.6z"/></svg>
+      </a>
+      <a href="https://huynhproduct.webflow.io/" target="_blank" rel="noopener" class="icon-plain hidden md:inline-flex" aria-label="Portfolio">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v2H3V5zm0 4h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+      </a>
+      <span class="hidden md:inline-block w-px h-5 bg-line mx-2"></span>
+      <button id="lang-toggle" type="button" class="lang-pill" aria-label="Switch language">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+        <span id="lang-toggle-label">EN</span>
+      </button>
+      <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-primary ml-1" style="padding: 10px 18px;">
+        <span data-i18n="cta.short">Liên hệ</span> →
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section id="top" class="relative pt-28 md:pt-36 pb-16 md:pb-28 px-6 md:px-8 overflow-hidden">
+  <div class="hero-bg"></div>
+  <span class="hero-blob b1"></span>
+  <span class="hero-blob b2"></span>
+  <span class="hero-blob b3"></span>
+
+  <!-- Floating sparkles -->
+  <span class="sparkle" style="top: 18%; left: 12%; font-size: 24px;">✦</span>
+  <span class="sparkle" style="top: 60%; left: 6%; font-size: 18px; animation-delay: 1s;">✦</span>
+  <span class="sparkle" style="top: 30%; right: 8%; font-size: 22px; animation-delay: 0.5s;">✧</span>
+  <span class="sparkle" style="bottom: 18%; right: 16%; font-size: 20px; animation-delay: 1.5s;">✦</span>
+
+  <div class="max-w-[1200px] mx-auto relative">
+    <div class="grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-center">
+
+      <!-- LEFT — Title -->
+      <div class="reveal in text-center lg:text-left">
+        <h1 class="display-xl text-[44px] sm:text-6xl md:text-7xl lg:text-[88px]">
+          <span data-i18n="hero.l1">Product Management</span><br/>
+          <span class="gradient-text" data-i18n="hero.l2">Kickstart</span> <span class="inline-block wobble">✨</span>
+        </h1>
+
+        <p class="text-lg md:text-xl text-ink/65 mt-7 max-w-2xl mx-auto lg:mx-0 leading-relaxed" data-i18n="hero.sub">
+          Từ fresher đến PO/BA — bài học đơn giản, câu chuyện thật, và hướng dẫn thực chiến từ người trong nghề.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-8">
+          <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-primary">
+            <span data-i18n="cta.long">Liên hệ tư vấn</span> →
+          </a>
+          <a href="#modules" class="btn btn-outline">
+            <span data-i18n="cta.explore">Xem chương trình</span>
+          </a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="grid grid-cols-3 gap-4 md:gap-8 mt-12 max-w-md mx-auto lg:mx-0">
+          <div>
+            <div class="stat-num gradient-text text-4xl md:text-5xl" data-count="16">16</div>
+            <p class="kicker text-ink/55 mt-2" data-i18n="stat.modules">Modules</p>
+          </div>
+          <div>
+            <div class="stat-num gradient-text text-4xl md:text-5xl" data-count="8">8</div>
+            <p class="kicker text-ink/55 mt-2" data-i18n="stat.weeks">Tuần học</p>
+          </div>
+          <div>
+            <div class="stat-num gradient-text text-4xl md:text-5xl">5–10</div>
+            <p class="kicker text-ink/55 mt-2" data-i18n="stat.class">HV/lớp</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — Course card mockup -->
+      <div class="reveal in relative">
+        <div class="relative max-w-md mx-auto">
+          <!-- Decorative floating pills around card -->
+          <div class="absolute -top-4 -left-2 pill float-bob z-10" style="animation-delay: 0.3s;">
+            <span>🤖</span>
+            <span data-i18n="hero.chip1">Ứng dụng AI</span>
+          </div>
+          <div class="absolute -top-3 -right-3 pill float-bob-slow z-10" style="animation-delay: 0.8s;">
+            <span>📚</span>
+            <span data-i18n="hero.chip2">16 buổi học</span>
+          </div>
+          <div class="absolute top-1/2 -right-6 pill float-bob z-10 hidden sm:inline-flex" style="animation-delay: 1.2s;">
+            <span>💼</span>
+            <span data-i18n="hero.chip3">Case study thật</span>
+          </div>
+
+          <!-- The card itself -->
+          <div class="course-card course-card-tilt p-5 md:p-6" id="hero-card">
+            <!-- "Hero image" — person studying composition -->
+            <div class="relative rounded-2xl overflow-hidden aspect-[4/3] mb-5" style="background: linear-gradient(135deg, #EEEAF5 0%, #E0E7FF 100%);">
+              <!-- decorative shapes -->
+              <span class="absolute top-6 left-6 w-14 h-14 rounded-full bg-purple/15 spin-slow" style="animation-duration: 30s;"></span>
+              <span class="absolute bottom-6 right-6 w-20 h-20 rounded-full" style="background: rgba(99,102,241,0.18); animation: float-bob 6s ease-in-out infinite;"></span>
+              <!-- Subtle dotted grid -->
+              <span class="absolute inset-0" style="background-image: radial-gradient(rgba(31,18,46,0.07) 1px, transparent 1px); background-size: 14px 14px; opacity: 0.6;"></span>
+
+              <!-- Floating product symbols -->
+              <span class="absolute top-5 right-7 text-2xl md:text-3xl float-bob" style="animation-delay: 0.3s;">💡</span>
+              <span class="absolute bottom-7 left-5 text-2xl md:text-3xl float-bob-slow" style="animation-delay: 0.8s;">📊</span>
+              <span class="absolute top-11 right-20 text-lg md:text-xl float-bob" style="animation-delay: 1.2s;">✨</span>
+              <span class="absolute bottom-4 right-14 text-lg md:text-xl float-bob-slow" style="animation-delay: 1.5s;">✏️</span>
+
+              <!-- Center person studying (properly centered via flex wrapper so float animation doesn't fight transform) -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span class="text-[120px] md:text-[150px] float-bob-slow leading-none">🧑‍💻</span>
+              </div>
+
+              <!-- Top badge -->
+              <span class="absolute top-3 left-3 chip text-[11px]" style="padding: 4px 10px; background: #fff; color: var(--violet);">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <span data-i18n="hero.card.tag">Bestseller</span>
+              </span>
+              <span class="absolute top-3 right-3 icon-btn" style="width: 34px; height: 34px; background: #fff;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              </span>
+            </div>
+
+            <!-- Title -->
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <h3 class="display text-lg md:text-xl" data-i18n="hero.card.title">PM Kickstart · 8 tuần</h3>
+              <div class="flex items-center gap-1 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#D946EF"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <span class="font-semibold text-sm">4.9</span>
+                <span class="text-xs text-ink/50">(48)</span>
+              </div>
+            </div>
+            <p class="text-sm text-ink/60 mb-4" data-i18n="hero.card.host">Cùng Huynh Tran · Senior PO/PM</p>
+
+            <!-- Feature list -->
+            <ul class="space-y-2 mb-5 text-sm text-ink/75">
+              <li class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-mint flex items-center justify-center flex-shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <span data-i18n="hero.card.f1">16 chương · Final Project · Ứng dụng AI</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-mint flex items-center justify-center flex-shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <span data-i18n="hero.card.f2">Lớp nhỏ 5–10 học viên</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-mint flex items-center justify-center flex-shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <span data-i18n="hero.card.f3">Case study thực chiến để ứng tuyển</span>
+              </li>
+            </ul>
+
+            <div class="flex items-end justify-between gap-3 pt-4 border-t border-line">
+              <div class="min-w-0">
+                <p class="text-xs text-ink/55" data-i18n="hero.card.price">Học phí trọn khoá</p>
+                <p class="display text-xl md:text-2xl"><span class="gradient-text">4.990.000đ</span></p>
+              </div>
+              <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-ink flex-shrink-0" style="padding: 13px 22px; font-size: 14px;">
+                <span data-i18n="hero.card.cta">Đặt chỗ</span> →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Trust strip -->
+    <div class="reveal mt-16 md:mt-24">
+      <p class="kicker text-center text-ink/45 mb-6" data-i18n="trust.kicker">Học viên đã đến từ</p>
+      <div class="marquee">
+        <div class="marquee-track">
+          <span class="chip">FPT University</span>
+          <span class="chip chip-sky">VinUni</span>
+          <span class="chip chip-slate">UEH</span>
+          <span class="chip chip-mint">RMIT</span>
+          <span class="chip chip-sky">HUST</span>
+          <span class="chip">Foreign Trade Uni</span>
+          <span class="chip chip-slate">NEU</span>
+          <span class="chip chip-butter">Văn Lang</span>
+          <span class="chip chip-mint">Tôn Đức Thắng</span>
+          <span class="chip chip-sky">UEL</span>
+          <!-- duplicate -->
+          <span class="chip">FPT University</span>
+          <span class="chip chip-sky">VinUni</span>
+          <span class="chip chip-slate">UEH</span>
+          <span class="chip chip-mint">RMIT</span>
+          <span class="chip chip-sky">HUST</span>
+          <span class="chip">Foreign Trade Uni</span>
+          <span class="chip chip-slate">NEU</span>
+          <span class="chip chip-butter">Văn Lang</span>
+          <span class="chip chip-mint">Tôn Đức Thắng</span>
+          <span class="chip chip-sky">UEL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== AUDIENCE — horizontal scroller ============== -->
+<section id="audience" class="section px-6 md:px-8 bg-cream">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
+      <div class="reveal">
+        <p class="kicker text-violet mb-3" data-i18n="audience.kicker">Khoá học dành cho</p>
+        <h2 class="display-xl text-4xl md:text-6xl" data-i18n="audience.title">Ai phù hợp với khoá này?</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 reveal">
+      <article class="lift" style="background: linear-gradient(180deg, #EEEAF5 0%, #fff 55%); border: 1px solid var(--line); border-radius: 24px; overflow: hidden;">
+        <div class="h-24 relative flex items-center justify-center">
+          <span class="text-5xl float-bob-slow leading-none">🎓</span>
+          <span class="absolute top-3 left-3 chip" style="background: #fff; color: var(--violet); padding: 4px 10px; font-size: 11px;">01</span>
+        </div>
+        <div class="px-6 pb-6 pt-2 text-center">
+          <h3 class="display text-xl mb-2" data-i18n="aud.1.t">Sinh viên</h3>
+          <p class="text-ink/65 text-[14.5px] leading-relaxed" data-i18n="aud.1.d">Đang tìm hướng đi sự nghiệp rõ ràng — sớm tìm được vị trí BA PO đầu tiên</p>
+        </div>
+      </article>
+      <article class="lift" style="background: linear-gradient(180deg, #E0E7FF 0%, #fff 55%); border: 1px solid var(--line); border-radius: 24px; overflow: hidden;">
+        <div class="h-24 relative flex items-center justify-center">
+          <span class="text-5xl float-bob leading-none">💼</span>
+          <span class="absolute top-3 left-3 chip" style="background: #fff; color: #4338CA; padding: 4px 10px; font-size: 11px;">02</span>
+        </div>
+        <div class="px-6 pb-6 pt-2 text-center">
+          <h3 class="display text-xl mb-2" data-i18n="aud.2.t">Fresher</h3>
+          <p class="text-ink/65 text-[14.5px] leading-relaxed" data-i18n="aud.2.d">Mới ra trường, muốn theo đuổi Product Management ngay từ bước đầu tiên</p>
+        </div>
+      </article>
+      <article class="lift" style="background: linear-gradient(180deg, #F1F3F5 0%, #fff 55%); border: 1px solid var(--line); border-radius: 24px; overflow: hidden;">
+        <div class="h-24 relative flex items-center justify-center">
+          <span class="text-5xl float-bob-slow leading-none" style="animation-delay: 1s;">🔁</span>
+          <span class="absolute top-3 left-3 chip" style="background: #fff; color: #475569; padding: 4px 10px; font-size: 11px;">03</span>
+        </div>
+        <div class="px-6 pb-6 pt-2 text-center">
+          <h3 class="display text-xl mb-2" data-i18n="aud.3.t">Người chuyển ngành</h3>
+          <p class="text-ink/65 text-[14.5px] leading-relaxed" data-i18n="aud.3.d">Từ Marketing, IT, Sales, QA, CS… muốn rẽ sang BA / PO để tăng nhanh thu nhập</p>
+        </div>
+      </article>
+    </div>
+
+    <!-- Outcome statement -->
+    <div class="reveal mt-12 md:mt-16 max-w-3xl mx-auto text-center">
+      <p class="display text-2xl md:text-4xl leading-snug" data-i18n="audience.outcome">Sau 2 tháng, bạn có một case study thực chiến &amp; đầy đủ kiến thức trong tay — đủ để ứng tuyển vào các vị trí BA / PO / PM.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SKILLS ============== -->
+<section class="section px-6 md:px-8">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <p class="kicker text-violet mb-3 reveal" data-i18n="skills.kicker">Bạn sẽ được trang bị</p>
+      <h2 class="display-xl text-4xl md:text-6xl mb-5 reveal" data-i18n="skills.title">9 năng lực <span class="gradient-text">cốt lõi</span></h2>
+      <p class="reveal text-base md:text-lg text-ink/60 max-w-2xl mx-auto leading-relaxed" data-i18n="skills.sub">
+        Không chỉ lý thuyết — đi kèm kinh nghiệm thực chiến từ người trong nghề tại các công ty công nghệ lớn.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 reveal-stagger">
+      <!-- 01 · Product mindset -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-lavender">🧠</div>
+          <span class="skill-num">01</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.1.t">Tư duy Product Management</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.1.d">Từ pain point đến MVP — toàn diện vòng đời sản phẩm.</p>
+      </div>
+
+      <!-- 02 · BA / PO / PM roles -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-slate">👥</div>
+          <span class="skill-num">02</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.2.t">Ứng dụng AI</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.2.d">Biết dùng AI để tối ưu công việc hằng ngày và xây dựng tính năng AI.</p>
+      </div>
+
+      <!-- 03 · Research & Discovery -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-butter">🔍</div>
+          <span class="skill-num">03</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.3.t">Research &amp; Discovery</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.3.d">Từ research và discovery đến thiết kế giải pháp và release.</p>
+      </div>
+
+      <!-- 04 · UX/UI & Design — HIGHLIGHT -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-mint">🎨</div>
+          <span class="skill-num">04</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.4.t">UX/UI &amp; Solution Design</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.4.d">Figma, Wireframe, User Flow, Prototype và nguyên tắc thiết kế cơ bản.</p>
+      </div>
+
+      <!-- 05 · PRD & User Story -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-sky">📝</div>
+          <span class="skill-num">05</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.5.t">Viết PRD &amp; User Story</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.5.d">Hiểu và thực hành viết các tài liệu mô tả tính năng như PRD, Acceptance Criteria, Release note,...</p>
+      </div>
+
+      <!-- 06 · Agile/Scrum -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-lavender">🔄</div>
+          <span class="skill-num">06</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.6.t">Agile · Scrum · Backlog</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.6.d">Sprint Planning, Refinement, Review, Retro — nắm vững từ A đến Z.</p>
+      </div>
+
+      <!-- 07 · Tools — HIGHLIGHT -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-slate">🛠️</div>
+          <span class="skill-num">07</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.7.t">Jira · Confluence · Miro</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.7.d">Dùng đúng cách team Product chuyên nghiệp — không phải bản demo.</p>
+      </div>
+
+      <!-- 08 · Stakeholder & Communication — NEW -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-butter">🤝</div>
+          <span class="skill-num">08</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.8.t">Stakeholder &amp; Prioritization</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.8.d">Biết cách quản lý và phối hợp nhiều team khác nhau, sắp xếp độ ưu tiên hợp lý.</p>
+      </div>
+
+      <!-- 09 · Technical foundations — EXPANDED -->
+      <div class="skill-card">
+        <div class="skill-head">
+          <div class="skill-icon bg-mint">⚙️</div>
+          <span class="skill-num">09</span>
+        </div>
+        <h3 class="display text-lg mb-2" data-i18n="skill.9.t">Nền tảng kỹ thuật</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="skill.9.d">Frontend, Backend, API, Webhook, Database, DevTools — đủ để nói chuyện với Dev.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HANDS-ON / COMBAT ============== -->
+<section class="section px-6 md:px-8 bg-cream">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <p class="kicker text-violet mb-3 reveal" data-i18n="combat.kicker">Đặc biệt, bạn sẽ được</p>
+      <h2 class="display-xl text-4xl md:text-6xl reveal" data-i18n="combat.title">Thực chiến với<br/><span class="gradient-text">người trong nghề</span></h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 md:gap-5">
+      <!-- 01 -->
+      <div class="reveal bg-white border border-line rounded-3xl p-6 md:p-8 min-h-[280px] flex flex-col justify-between lift overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="display text-2xl gradient-text">01</span>
+          <span class="kicker text-ink/40">Practice</span>
+        </div>
+        <div class="marquee -mx-6 md:-mx-8 my-6">
+          <div class="marquee-track">
+            <span class="chip">Problem Statement</span>
+            <span class="chip chip-sky">User Flow</span>
+            <span class="chip">PRD</span>
+            <span class="chip chip-butter">User Story</span>
+            <span class="chip chip-slate">Backlog</span>
+            <span class="chip chip-mint">Sprint Planning</span>
+            <span class="chip">Metrics</span>
+            <span class="chip chip-sky">Roadmap</span>
+            <span class="chip chip-slate">Release Note</span>
+            <span class="chip">Problem Statement</span>
+            <span class="chip chip-sky">User Flow</span>
+            <span class="chip">PRD</span>
+            <span class="chip chip-butter">User Story</span>
+            <span class="chip chip-slate">Backlog</span>
+            <span class="chip chip-mint">Sprint Planning</span>
+            <span class="chip">Metrics</span>
+            <span class="chip chip-sky">Roadmap</span>
+            <span class="chip chip-slate">Release Note</span>
+          </div>
+        </div>
+        <p class="display text-xl md:text-[22px] leading-snug" data-i18n="combat.1">Thực hành đủ mọi artifact thật của PO/PM — từ Problem Statement, User story tới Roadmap.</p>
+      </div>
+
+      <!-- 02 — Jira ticket -->
+      <div class="reveal rounded-3xl p-6 md:p-8 min-h-[280px] flex flex-col lift overflow-hidden" style="background: linear-gradient(140deg, #EEEAF5 0%, #E0E7FF 100%); border: 1px solid var(--line);">
+        <div class="flex items-center justify-between mb-5">
+          <span class="display text-2xl gradient-text">02</span>
+          <span class="kicker text-ink/40">Live demos</span>
+        </div>
+        <div class="rounded-2xl bg-white shadow-[0_10px_30px_-12px_rgba(124,58,237,0.2)] border border-line p-4 mb-3 flex flex-col gap-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-[3px] bg-[#22A06B] grid place-items-center text-white">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="text-[11px] text-ink/45 font-mono tracking-wide">PB-247</span>
+            <span class="ml-auto text-[9px] uppercase tracking-wider bg-butter text-amber-700 px-1.5 py-0.5 rounded font-medium">In Progress</span>
+          </div>
+          <p class="text-[14px] text-ink font-medium leading-[1.35]">Add onboarding checklist to dashboard</p>
+          <div class="flex items-center gap-1.5 pt-1">
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cream text-ink/65 border border-line">5 pts</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cream text-ink/65 border border-line">Sprint 12</span>
+            <div class="ml-auto w-5 h-5 rounded-full bg-gradient-to-br from-purple to-pink"></div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mb-4">
+          <span class="text-[10px] uppercase tracking-[0.18em] px-2 py-1 rounded-full bg-white text-ink/60 border border-line">Jira</span>
+          <span class="text-[10px] uppercase tracking-[0.18em] px-2 py-1 rounded-full bg-white text-ink/60 border border-line">Confluence</span>
+          <span class="text-[10px] uppercase tracking-[0.18em] px-2 py-1 rounded-full bg-white text-ink/60 border border-line">Figma</span>
+        </div>
+        <p class="display text-xl md:text-[22px] leading-snug mt-auto" data-i18n="combat.2">Ví dụ từ công ty công nghệ lớn — học thật trên Jira, Confluence, Figma, và Clause.</p>
+      </div>
+
+      <!-- 03 — dark chat -->
+      <div class="reveal rounded-3xl p-6 md:p-8 min-h-[280px] flex flex-col text-white lift overflow-hidden" style="background: linear-gradient(135deg, #1A0F2E 0%, #5B21B6 100%);">
+        <div class="flex items-center justify-between mb-5">
+          <span class="display text-2xl" style="background: linear-gradient(95deg, #D946EF, #FBCFE8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">03</span>
+          <span class="kicker text-white/45">Case study</span>
+        </div>
+        <div class="space-y-2 mb-4">
+          <div class="flex items-start gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-white/15 grid place-items-center text-[10px] text-white/70 flex-shrink-0">PM</div>
+            <div class="rounded-2xl rounded-tl-sm bg-white/10 px-3.5 py-2.5 text-[13px] leading-[1.45] text-white/90 max-w-[85%]">
+              Nếu là PM của Tiki, bạn sẽ improve checkout flow thế nào?
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5 justify-end">
+            <div class="rounded-2xl rounded-tr-sm px-3.5 py-2.5 text-[13px] leading-[1.45] text-white max-w-[85%] flex items-start gap-2" style="background: linear-gradient(135deg, #7C3AED, #D946EF);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Bạn có khung sườn rõ ràng để dẫn dắt câu trả lời.</span>
+            </div>
+          </div>
+        </div>
+        <p class="display text-xl md:text-[22px] leading-snug mt-auto" data-i18n="combat.3">Giải case study phỏng vấn như người đã làm thật.</p>
+      </div>
+
+      <!-- 04 — EN/VI -->
+      <div class="reveal rounded-3xl p-6 md:p-8 min-h-[280px] flex flex-col lift overflow-hidden" style="background: linear-gradient(140deg, #E0E7FF 0%, #F1F3F5 100%); border: 1px solid var(--line);">
+        <div class="flex items-center justify-between mb-5">
+          <span class="display text-2xl gradient-text">04</span>
+          <span class="kicker text-ink/40">English</span>
+        </div>
+        <div class="rounded-2xl bg-white border border-line shadow-[0_10px_30px_-12px_rgba(40,60,120,0.18)] overflow-hidden mb-4">
+          <div class="px-4 py-3 border-b border-line">
+            <span class="text-[9px] uppercase tracking-[0.2em] font-medium px-1.5 py-0.5 rounded text-[#2563EB] bg-sky mb-1.5 inline-block">EN</span>
+            <p class="text-[14px] text-ink leading-[1.4]">"Let's align on the <span style="background: linear-gradient(transparent 60%, rgba(217,70,239,0.3) 60%);">acceptance criteria</span> for this user story."</p>
+          </div>
+          <div class="px-4 py-3 bg-cream">
+            <span class="text-[9px] uppercase tracking-[0.2em] font-medium px-1.5 py-0.5 rounded text-pink bg-rose mb-1.5 inline-block">VI</span>
+            <p class="text-[14px] text-ink/75 leading-[1.4]">Cùng thống nhất tiêu chí nghiệm thu cho user story này nhé.</p>
+          </div>
+        </div>
+        <p class="display text-xl md:text-[22px] leading-snug mt-auto" data-i18n="combat.4">Tiếng Anh chuyên ngành lồng vào mỗi buổi — đọc tài liệu &amp; giao tiếp tự tin hơn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MODULES ============== -->
+<section id="modules" class="section px-6 md:px-8 bg-cream">
+  <div class="max-w-[900px] mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <p class="kicker text-violet mb-3 reveal" data-i18n="modules.kicker">Chi tiết nội dung khoá học</p>
+      <h2 class="display-xl text-5xl md:text-7xl mb-5 reveal" data-i18n="modules.title">16 <span class="gradient-text">Modules</span></h2>
+      <p class="reveal text-base md:text-lg text-ink/60 max-w-2xl mx-auto leading-relaxed mb-3" data-i18n="modules.sub">
+        Học online trực tiếp — 16 buổi × 2 giờ, mỗi tuần 2 buổi (tương đương 2 tháng).
+      </p>
+      <p class="reveal text-base md:text-lg text-ink/85 max-w-2xl mx-auto leading-relaxed" data-i18n="modules.outcome">
+        Sau khoá học, bạn sẽ <span class="text-ink font-semibold">tự tin và sẵn sàng ứng tuyển vị trí Fresher BA/PO</span>.
+      </p>
+    </div>
+
+    <div id="modules-list" class="reveal"></div>
+  </div>
+</section>
+
+<!-- ============== MENTOR (moved here — after 16 modules) ============== -->
+<section id="mentor" class="section px-6 md:px-8">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <p class="kicker text-violet mb-3 reveal" data-i18n="mentor.kicker">Người dẫn dắt</p>
+      <h2 class="display-xl text-4xl md:text-6xl reveal" data-i18n="mentor.title">Gặp <span class="gradient-text">mentor</span> của bạn</h2>
+    </div>
+
+    <div class="grid lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
+      <div class="reveal relative">
+        <!-- Spinning ring -->
+        <div class="absolute inset-0 -m-4 rounded-[40px] spin-slow opacity-60" style="background: conic-gradient(from 0deg, #7C3AED, #D946EF, #FCE7F3, #7C3AED);"></div>
+        <div class="relative rounded-[36px] overflow-hidden aspect-[4/5] max-w-[420px] mx-auto" style="background: linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 100%);">
+          <svg viewBox="0 0 200 250" class="w-full h-full opacity-80" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="mg3" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7C3AED"/>
+                <stop offset="100%" stop-color="#D946EF"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="95" r="38" fill="url(#mg3)"/>
+            <path d="M28 250 C 28 175, 172 175, 172 250 Z" fill="url(#mg3)"/>
+          </svg>
+
+          <!-- floating badges -->
+          <div class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-white shadow flex items-center gap-2 float-bob">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+            <span class="text-[11px] font-medium text-ink/75" data-i18n="mentor.available">Đang nhận học viên</span>
+          </div>
+          <div class="absolute bottom-4 right-4 px-4 py-3 rounded-2xl bg-ink text-white shadow-lg float-bob-slow">
+            <div class="display text-2xl leading-none">6+</div>
+            <div class="kicker text-white/60 mt-1.5" data-i18n="mentor.years">Năm KN</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay: 0.1s">
+        <p class="kicker text-ink/50 mb-3" data-i18n="mentor.role">Senior Product Owner · Founder, Product Buddy</p>
+        <h3 class="display-xl text-4xl md:text-5xl mb-5">
+          <span data-i18n="mentor.name">Huynh Tran</span>
+        </h3>
+        <p class="text-base md:text-lg text-ink/70 leading-relaxed mb-4" data-i18n="mentor.bio1">6+ năm xây dựng sản phẩm tại các công ty trong và ngoài nước. Hiện đang phát triển sản phẩm SaaS B2B tại Inspectorio — công ty công nghệ Mỹ phục vụ 12,000+ khách hàng gồm Walmart, Target, Tesco, DICK'S và Crocs. Dẫn dắt 4 sản phẩm, thực hiện nhiều MVP/Pilot mang về nhiều hợp đồng.</p>
+        <p class="text-base md:text-lg text-ink/70 leading-relaxed mb-7" data-i18n="mentor.bio2">2× Vô địch Hackathon nội bộ với ý tưởng sáng tạo và được vinh danh Employee of the Year. Founder Product Buddy — đã đồng hành 100+ bạn fresher và career-switcher tìm được công việc BA/PO đầu tiên.</p>
+
+        <!-- Stat cards -->
+        <div class="grid grid-cols-3 gap-3 mb-7">
+          <div class="rounded-2xl border border-line bg-cream/60 p-4 text-center">
+            <div class="display text-2xl gradient-text leading-none mb-1.5">$300K+</div>
+            <p class="text-[11px] text-ink/55 leading-tight" data-i18n="mentor.stat1">Deal MVP mang về</p>
+          </div>
+          <div class="rounded-2xl border border-line bg-cream/60 p-4 text-center">
+            <div class="display text-2xl gradient-text leading-none mb-1.5">2×</div>
+            <p class="text-[11px] text-ink/55 leading-tight" data-i18n="mentor.stat2">Vô địch Hackathon</p>
+          </div>
+          <div class="rounded-2xl border border-line bg-cream/60 p-4 text-center">
+            <div class="display text-2xl gradient-text leading-none mb-1.5">100+</div>
+            <p class="text-[11px] text-ink/55 leading-tight" data-i18n="mentor.stat3">Mentee đã đồng hành</p>
+          </div>
+        </div>
+
+        <!-- Clients -->
+        <p class="kicker text-ink/45 mb-3" data-i18n="mentor.clients">Khách hàng đã làm việc cùng</p>
+        <div class="flex flex-wrap gap-2 mb-7">
+          <span class="tag">Walmart</span>
+          <span class="tag">Target</span>
+          <span class="tag">Tesco</span>
+          <span class="tag">DICK'S</span>
+          <span class="tag">Crocs</span>
+        </div>
+
+        <!-- Expertise -->
+        <p class="kicker text-ink/45 mb-3" data-i18n="mentor.expertise">Chuyên môn</p>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="tag">B2B SaaS · AI Products</span>
+          <span class="tag">Product Strategy</span>
+          <span class="tag">Agile / Scrum</span>
+          <span class="tag">UX / Figma</span>
+          <span class="tag">Data &amp; Analytics</span>
+          <span class="tag">Stakeholder Mgmt</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-primary">
+            <span data-i18n="cta.long">Liên hệ tư vấn</span> →
+          </a>
+          <a href="https://huynhproduct.webflow.io/" target="_blank" rel="noopener" class="btn btn-ghost">
+            <span data-i18n="mentor.portfolio">Xem Portfolio</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+          <div class="flex items-center gap-1 ml-1">
+            <a href="https://www.facebook.com/productbuddy.official" target="_blank" rel="noopener" class="icon-plain" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/huynhproduct/" target="_blank" rel="noopener" class="icon-plain" aria-label="LinkedIn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM8.3 18.3H5.7v-8h2.6v8zM7 9.2a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm11.3 9.1h-2.6V14c0-1-.4-1.7-1.3-1.7s-1.4.6-1.6 1.2c-.1.2-.1.5-.1.8v4h-2.6v-8h2.6v1.1c.3-.5 1-1.3 2.4-1.3 1.8 0 3.1 1.2 3.1 3.6v4.6z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS — horizontal scroller ============== -->
+<section class="section px-6 md:px-8">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
+      <div class="reveal">
+        <p class="kicker text-violet mb-3" data-i18n="test.kicker">Cảm nhận học viên</p>
+        <h2 class="display-xl text-4xl md:text-6xl" data-i18n="test.title">Các bạn <span class="gradient-text">đã nói gì</span>?</h2>
+      </div>
+      <div class="reveal flex items-center gap-2">
+        <button id="t-prev" class="icon-btn" aria-label="Prev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button id="t-next" class="icon-btn" aria-label="Next"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+    </div>
+
+    <div id="testimonials-scroller" class="scroller reveal"></div>
+  </div>
+</section>
+
+<!-- ============== FORMAT ============== -->
+<section class="section px-6 md:px-8 bg-cream">
+  <div class="max-w-[1200px] mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <p class="kicker text-violet mb-3 reveal" data-i18n="format.kicker">Hình thức học</p>
+      <h2 class="display-xl text-4xl md:text-6xl reveal" data-i18n="format.title">Bạn sẽ học <span class="gradient-text">như thế nào</span>?</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 reveal-stagger">
+      <div class="skill-card text-center">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-lavender flex items-center justify-center mb-5 text-3xl">📡</div>
+        <h3 class="display text-lg mb-2" data-i18n="format.1.t">Học online trực tiếp</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="format.1.d">Không phải video quay sẵn — tương tác trực tiếp với mentor.</p>
+      </div>
+      <div class="skill-card text-center">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-sky flex items-center justify-center mb-5 text-3xl">👥</div>
+        <h3 class="display text-lg mb-2" data-i18n="format.2.t">5–10 học viên / lớp</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="format.2.d">Lớp nhỏ để mentor theo sát từng bạn.</p>
+      </div>
+      <div class="skill-card text-center">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-butter flex items-center justify-center mb-5 text-3xl">🎯</div>
+        <h3 class="display text-lg mb-2" data-i18n="format.3.t">Ví dụ thực tế</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="format.3.d">Demo case study từ chính dự án mentor làm tại các công ty công nghệ lớn.</p>
+      </div>
+      <div class="skill-card text-center">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-mint flex items-center justify-center mb-5 text-3xl">⏰</div>
+        <h3 class="display text-lg mb-2" data-i18n="format.4.t">Linh hoạt thời gian</h3>
+        <p class="text-ink/60 text-sm leading-relaxed" data-i18n="format.4.d">Lịch học thống nhất theo lịch rảnh của học viên.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TUITION ============== -->
+<section id="tuition" class="section px-6 md:px-8">
+  <div class="max-w-[1100px] mx-auto">
+    <div class="reveal tuition-card">
+      <div class="tuition-grid-overlay"></div>
+
+      <!-- Floating decorations -->
+      <span class="sparkle" style="top: 12%; left: 8%; font-size: 22px; color: #FCD34D;">✨</span>
+      <span class="sparkle" style="top: 22%; right: 14%; font-size: 18px; animation-delay: 0.8s; color: #FBCFE8;">✨</span>
+      <span class="sparkle" style="bottom: 18%; left: 12%; font-size: 20px; animation-delay: 1.4s; color: #FCD34D;">✦</span>
+      <span class="sparkle" style="bottom: 26%; right: 22%; font-size: 16px; animation-delay: 0.5s; color: #fff;">✧</span>
+      <span class="floating-coin float-bob" style="width: 56px; height: 56px; top: 18%; right: -10px; animation-delay: 0.4s; display: flex; align-items: center; justify-content: center; font-size: 22px;">💰</span>
+      <span class="floating-coin float-bob-slow" style="width: 38px; height: 38px; bottom: 14%; left: -8px; animation-delay: 1.2s; display: flex; align-items: center; justify-content: center; font-size: 16px;">🎓</span>
+
+      <!-- Corner ribbon -->
+      <div class="tuition-ribbon" data-i18n="tuition.ribbon">Early bird</div>
+
+      <div class="relative z-10 grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-center">
+        <!-- Price side -->
+        <div class="text-center lg:text-left">
+          <p class="kicker text-white/60 mb-5" data-i18n="tuition.kicker">Học phí</p>
+          <div class="inline-flex items-baseline gap-2 mb-4">
+            <span class="price-glow leading-[0.95] whitespace-nowrap" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(54px, 10vw, 120px); letter-spacing: -0.045em;">
+              4.990.000<span style="font-weight: 500; font-size: 0.4em; vertical-align: top; margin-left: 4px;">đ</span>
+            </span>
+          </div>
+          <div class="inline-flex items-center gap-3 mb-7 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+            <span class="text-white/55 text-xs uppercase tracking-wider" data-i18n="tuition.original">Giá gốc</span>
+            <span class="text-white/70 text-sm line-through">6.500.000đ</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400 text-amber-900">–23%</span>
+          </div>
+          <p class="text-white/70 text-sm md:text-base max-w-md mx-auto lg:mx-0 leading-relaxed mb-8" data-i18n="tuition.note">
+            Các câu hỏi thắc mắc được giải đáp ngay trong buổi học. Mentor đồng hành 1-1 suốt khoá.
+          </p>
+          <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="cta-pulse btn" style="background: #fff; color: var(--violet); padding: 18px 36px; font-size: 15px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <span data-i18n="cta.register">Đăng ký ngay</span>
+          </a>
+        </div>
+
+        <!-- Value side -->
+        <div class="bg-white/8 border border-white/15 rounded-3xl p-7 md:p-8 backdrop-blur-sm" style="background: rgba(255,255,255,0.08);">
+          <p class="kicker text-white/60 mb-5" data-i18n="tuition.youget">Bạn nhận được</p>
+          <div class="space-y-0">
+            <div class="tuition-feature">
+              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f1">16 buổi học trực tiếp × 2 giờ</span>
+            </div>
+            <div class="tuition-feature">
+              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f2">Mentor review chi tiết mỗi bài tập</span>
+            </div>
+            <div class="tuition-feature">
+              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f3">Truy cập trọn đời tài liệu khoá học</span>
+            </div>
+            <div class="tuition-feature">
+              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f4">Final project — case study mang đi phỏng vấn</span>
+            </div>
+            <div class="tuition-feature">
+              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f5">Ứng dụng AI vào workflow PM để bứt phá</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section id="contact" class="section px-6 md:px-8">
+  <div class="max-w-[1100px] mx-auto text-center">
+    <div class="reveal">
+      <p class="kicker text-violet mb-5" data-i18n="finalcta.kicker">Bắt đầu hành trình</p>
+      <h2 class="display-xl text-5xl md:text-7xl lg:text-8xl leading-[0.95] mb-6">
+        <span data-i18n="finalcta.line1">Sẵn sàng</span> <span class="gradient-text" data-i18n="finalcta.line2">bắt đầu?</span>
+      </h2>
+      <p class="text-base md:text-lg text-ink/65 max-w-2xl mx-auto leading-relaxed mb-10" data-i18n="finalcta.sub">
+        Nhắn tin để được tư vấn chi tiết về khoá học, lịch khai giảng, và hỗ trợ chọn lộ trình phù hợp với bạn.
+      </p>
+      <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 18px 44px; font-size: 15px;">
+        <span data-i18n="cta.register">Đăng ký ngay</span> →
+      </a>
+    </div>
+
+    <div class="reveal mt-20 pt-8 border-t border-line flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <span class="wordmark-logo">P</span>
+        <span class="display text-lg">Product Buddy</span>
+        <span class="text-sm text-ink/45 ml-2">© <span id="year"></span></span>
+      </div>
+      <p class="text-sm text-ink/55" data-i18n="footer.tag">Từ fresher đến PO/BA</p>
+      <div class="flex items-center gap-1">
+        <a href="https://www.facebook.com/productbuddy.official" target="_blank" rel="noopener" class="icon-plain" aria-label="Facebook">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/huynhproduct/" target="_blank" rel="noopener" class="icon-plain" aria-label="LinkedIn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM8.3 18.3H5.7v-8h2.6v8zM7 9.2a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm11.3 9.1h-2.6V14c0-1-.4-1.7-1.3-1.7s-1.4.6-1.6 1.2c-.1.2-.1.5-.1.8v4h-2.6v-8h2.6v1.1c.3-.5 1-1.3 2.4-1.3 1.8 0 3.1 1.2 3.1 3.6v4.6z"/></svg>
+        </a>
+        <a href="https://huynhproduct.webflow.io/" target="_blank" rel="noopener" class="icon-plain" aria-label="Portfolio">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v2H3V5zm0 4h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MOBILE BOTTOM CTA ============== -->
+<div id="mobile-cta" class="mobile-cta">
+  <a href="https://m.me/productbuddy.official" target="_blank" rel="noopener" class="btn btn-primary flex-1 justify-center">
+    <span data-i18n="cta.register">Đăng ký ngay</span> →
+  </a>
+</div>
+
+<!-- ============== SCRIPTS ============== -->
+<script>
+// ============== I18N ==============
+const I18N = {
+  vi: {
+    "nav.audience": "Đối tượng",
+    "nav.mentor": "Mentor",
+    "nav.modules": "Chương trình",
+    "nav.tuition": "Học phí",
+    "cta.short": "Liên hệ",
+    "cta.long": "Liên hệ tư vấn",
+    "cta.register": "Đăng ký ngay",
+    "cta.explore": "Xem chương trình",
+    "hero.badge": "Khoá học · Vol. 01",
+    "hero.l1": "Product Management",
+    "hero.l2": "Kickstart",
+    "hero.sub": "Từ fresher đến PO/BA — bài học đơn giản, câu chuyện thật, và hướng dẫn thực chiến từ người trong nghề.",
+    "hero.chip1": "Ứng dụng AI",
+    "hero.chip2": "16 buổi học",
+    "hero.chip3": "Case study thật",
+    "hero.card.tag": "Bestseller",
+    "hero.card.title": "PM Kickstart · 8 tuần",
+    "hero.card.host": "Cùng Huynh Tran · Senior PO/PM",
+    "hero.card.f1": "16 chương · Final Project · Ứng dụng AI",
+    "hero.card.f2": "Lớp nhỏ 5–10 học viên",
+    "hero.card.f3": "Case study thực chiến để ứng tuyển",
+    "hero.card.price": "Học phí trọn khoá",
+    "hero.card.cta": "Đặt chỗ",
+    "stat.modules": "Modules",
+    "stat.weeks": "Tuần học",
+    "stat.class": "HV/lớp",
+    "trust.kicker": "Học viên đã đến từ",
+    "audience.kicker": "Khoá học dành cho",
+    "audience.title": "Ai phù hợp với khoá này?",
+    "audience.sub": "",
+    "aud.1.t": "Sinh viên",
+    "aud.1.d": "Đang tìm hướng đi sự nghiệp rõ ràng — sớm tìm được vị trí BA/PO đầu tiên.",
+    "aud.2.t": "Fresher",
+    "aud.2.d": "Mới ra trường, muốn theo đuổi Product Management ngay từ bước đầu tiên.",
+    "aud.3.t": "Người chuyển ngành",
+    "aud.3.d": "Từ Marketing, IT, Sales, QA, CS… muốn rẽ sang BA / PO để tăng nhanh thu nhập.",
+    "audience.outcome": 'Sau 2 tháng, bạn có một <span class="gradient-text">case study thực chiến &amp; đầy đủ kiến thức</span> trong tay — đủ để ứng tuyển vào các vị trí <span class="text-purple">BA / PO / PM</span>.',
+    "skills.kicker": "Bạn sẽ được trang bị",
+    "skills.title": '9 năng lực <span class="gradient-text">cốt lõi</span>',
+    "skills.sub": "Đặt nặng kỹ năng technical, công cụ chuyên nghiệp, và tư duy thiết kế — đúng những gì BA/PO làm việc hằng ngày.",
+    "skill.1.t": "Tư duy Product Management", "skill.1.d": "Từ pain point đến MVP — toàn diện vòng đời sản phẩm.",
+    "skill.2.t": "Ứng dụng AI", "skill.2.d": "Biết dùng AI để tối ưu công việc hằng ngày và xây dựng tính năng AI.",
+    "skill.3.t": "Research & Discovery", "skill.3.d": "Từ research và discovery đến thiết kế giải pháp và release.",
+    "skill.4.t": "UX/UI & Thiết kế sản phẩm", "skill.4.d": "Figma, Wireframe, User Flow, Prototype và nguyên tắc thiết kế cơ bản.",
+    "skill.5.t": "Viết PRD & User Story", "skill.5.d": "INVEST, Acceptance Criteria, quản lý Product Backlog gọn gàng.",
+    "skill.6.t": "Agile · Scrum · Backlog", "skill.6.d": "Sprint Planning, Refinement, Review, Retro — nắm vững từ A đến Z.",
+    "skill.7.t": "Jira · Confluence · Miro", "skill.7.d": "Dùng đúng cách team Product chuyên nghiệp — không phải bản demo.",
+    "skill.8.t": "Stakeholder & Giao tiếp", "skill.8.d": "Quản lý kỳ vọng nội bộ và external — pitch, demo, UAT, pilot.",
+    "skill.9.t": "Nền tảng kỹ thuật", "skill.9.d": "Frontend, Backend, API, Webhook, Database, DevTools — đủ để nói chuyện với Dev.",
+    "combat.kicker": "Đặc biệt, bạn sẽ được",
+    "combat.title": 'Thực chiến với<br/><span class="gradient-text">người trong nghề</span>',
+    "combat.1": "Thực hành đủ mọi artifact thật của PO/PM — từ Problem Statement, User Story tới Roadmap.",
+    "combat.2": "Ví dụ từ công ty công nghệ lớn — học thật trên Jira, Confluence, Figma và Claude.",
+    "combat.3": "Giải case study phỏng vấn như người đã làm thật.",
+    "combat.4": "Tiếng Anh chuyên ngành lồng vào mỗi buổi — đọc tài liệu & giao tiếp tự tin hơn.",
+    "mentor.kicker": "Người dẫn dắt",
+    "mentor.title": 'Gặp <span class="gradient-text">mentor</span> của bạn',
+    "mentor.available": "Đang nhận học viên",
+    "mentor.years": "Năm KN",
+    "mentor.role": "Senior Product Owner · Founder, Product Buddy",
+    "mentor.name": "Huynh Tran",
+    "mentor.bio1": "6+ năm xây dựng sản phẩm tại các công ty trong và ngoài nước. Hiện đang phát triển sản phẩm SaaS B2B tại Inspectorio — công ty công nghệ Mỹ phục vụ 12,000+ khách hàng gồm Walmart, Target, Tesco, DICK'S và Crocs. Dẫn dắt 4 sản phẩm, thực hiện nhiều MVP/Pilot mang về nhiều hợp đồng.",
+    "mentor.bio2": "2× Vô địch Hackathon nội bộ với ý tưởng sáng tạo và được vinh danh Employee of the Year. Founder Product Buddy — đã đồng hành 100+ bạn fresher và career-switcher tìm được công việc BA/PO đầu tiên.",
+    "mentor.stat1": "Deal MVP mang về",
+    "mentor.stat2": "Vô địch Hackathon",
+    "mentor.stat3": "Mentee đã đồng hành",
+    "mentor.clients": "Khách hàng đã làm việc cùng",
+    "mentor.expertise": "Chuyên môn",
+    "mentor.portfolio": "Xem Portfolio",
+    "modules.kicker": "Chi tiết nội dung khoá học",
+    "modules.title": '16 <span class="gradient-text">Modules</span>',
+    "modules.sub": "Học online trực tiếp — 16 buổi × 2 giờ, mỗi tuần 2 buổi (tương đương 2 tháng).",
+    "modules.outcome": 'Sau khoá học, bạn sẽ <span class="text-ink font-semibold">tự tin và sẵn sàng ứng tuyển vị trí Fresher BA/PO</span>.',
+    "format.kicker": "Hình thức học",
+    "format.title": 'Bạn sẽ học <span class="gradient-text">như thế nào</span>?',
+    "format.1.t": "Học online trực tiếp", "format.1.d": "Không phải video quay sẵn — tương tác trực tiếp với mentor.",
+    "format.2.t": "5–10 học viên / lớp", "format.2.d": "Lớp nhỏ để mentor theo sát từng bạn.",
+    "format.3.t": "Ví dụ thực tế", "format.3.d": "Demo case study từ chính dự án mentor làm tại các công ty công nghệ lớn.",
+    "format.4.t": "Linh hoạt thời gian", "format.4.d": "Lịch học thống nhất theo lịch rảnh của học viên.",
+    "test.kicker": "Cảm nhận học viên",
+    "test.title": 'Các bạn <span class="gradient-text">đã nói gì</span>?',
+    "tuition.kicker": "Học phí",
+    "tuition.ribbon": "Early bird",
+    "tuition.original": "Giá gốc",
+    "tuition.youget": "Bạn nhận được",
+    "tuition.f1": "16 buổi học trực tiếp × 2 giờ",
+    "tuition.f2": "Mentor review chi tiết mỗi bài tập",
+    "tuition.f3": "Truy cập trọn đời tài liệu khoá học",
+    "tuition.f4": "Final project — case study mang đi phỏng vấn",
+    "tuition.f5": "Ứng dụng AI vào workflow PM để bứt phá",
+    "tuition.full": "toàn bộ khoá học",
+    "tuition.permonth": "tương đương 2.495.000đ / tháng",
+    "tuition.note": "Các câu hỏi thắc mắc được giải đáp ngay trong buổi học. Mentor đồng hành 1-1 suốt khoá.",
+    "finalcta.kicker": "Bắt đầu hành trình",
+    "finalcta.line1": "Sẵn sàng",
+    "finalcta.line2": "bắt đầu?",
+    "finalcta.sub": "Nhắn tin để được tư vấn chi tiết về khoá học, lịch khai giảng, và hỗ trợ chọn lộ trình phù hợp với bạn.",
+    "footer.tag": "Từ fresher đến PO/BA"
+  },
+  en: {
+    "nav.audience": "Audience",
+    "nav.mentor": "Mentor",
+    "nav.modules": "Curriculum",
+    "nav.tuition": "Tuition",
+    "cta.short": "Contact",
+    "cta.long": "Talk to us",
+    "cta.register": "Register now",
+    "cta.explore": "View curriculum",
+    "hero.badge": "Course · Vol. 01",
+    "hero.l1": "Product Management",
+    "hero.l2": "Kickstart",
+    "hero.sub": "From fresher to PO/BA — simple lessons, real stories, and hands-on guidance from practitioners.",
+    "hero.chip1": "AI for PM",
+    "hero.chip2": "16 live sessions",
+    "hero.chip3": "Real case study",
+    "hero.card.tag": "Bestseller",
+    "hero.card.title": "PM Kickstart · 8 weeks",
+    "hero.card.host": "With Huynh Tran · Senior PO/PM",
+    "hero.card.f1": "16 chapters · Final Project · AI workflow",
+    "hero.card.f2": "Small classes of 5–10",
+    "hero.card.f3": "Real case study for interviews",
+    "hero.card.price": "Full course tuition",
+    "hero.card.cta": "Reserve",
+    "stat.modules": "Modules",
+    "stat.weeks": "Weeks",
+    "stat.class": "Students",
+    "trust.kicker": "Students have come from",
+    "audience.kicker": "This course is for",
+    "audience.title": "Who is this course for?",
+    "audience.sub": "",
+    "aud.1.t": "Students",
+    "aud.1.d": "Looking for a clear career direction — ready to land their first BA/PO role early.",
+    "aud.2.t": "Freshers",
+    "aud.2.d": "New graduates wanting to pursue Product Management from the very first step.",
+    "aud.3.t": "Career switchers",
+    "aud.3.d": "From Marketing, IT, Sales, QA, CS… moving into BA / PO to fast-track their income growth.",
+    "audience.outcome": 'After 2 months, you walk away with a <span class="gradient-text">real case study &amp; the complete knowledge</span> — enough to apply for <span class="text-purple">BA / PO / PM</span> roles.',
+    "skills.kicker": "You will be equipped with",
+    "skills.title": '9 <span class="gradient-text">core competencies</span>',
+    "skills.sub": "Heavy on technical skills, professional tools, and design thinking — exactly what BA/PO use day to day.",
+    "skill.1.t": "Product mindset", "skill.1.d": "From pain point to MVP — the full product lifecycle.",
+    "skill.2.t": "AI Knowledge", "skill.2.d": "Know how to use AI at work to optimize your workflow and build AI-powered features.",
+    "skill.3.t": "Research & Discovery", "skill.3.d": "From research and discovery to solution design and release.",
+    "skill.4.t": "UX/UI & Product Design", "skill.4.d": "Figma, wireframes, user flows, prototypes and core design principles.",
+    "skill.5.t": "Writing PRDs & User Stories", "skill.5.d": "INVEST, Acceptance Criteria, a tidy Product Backlog.",
+    "skill.6.t": "Agile · Scrum · Backlog", "skill.6.d": "Sprint Planning, Refinement, Review, Retro — from A to Z.",
+    "skill.7.t": "Jira · Confluence · Miro", "skill.7.d": "Used the way real Product teams do — not a sandbox demo.",
+    "skill.8.t": "Stakeholder & Communication", "skill.8.d": "Manage internal & external expectations — pitch, demo, UAT, pilot.",
+    "skill.9.t": "Technical foundations", "skill.9.d": "Frontend, Backend, API, Webhook, Database, DevTools — enough to talk to engineers.",
+    "combat.kicker": "Most importantly",
+    "combat.title": 'Hands-on with<br/><span class="gradient-text">an industry expert</span>',
+    "combat.1": "Practice every real PO/PM artifact — from Problem Statement, User Story to Roadmap.",
+    "combat.2": "Examples from leading tech companies — learn hands-on with Jira, Confluence, Figma, and Claude.",
+    "combat.3": "Solve interview case studies the way someone who's done the job would.",
+    "combat.4": "Industry English woven into every session — read docs & communicate with confidence.",
+    "mentor.kicker": "Your guide",
+    "mentor.title": 'Meet your <span class="gradient-text">mentor</span>',
+    "mentor.available": "Accepting students",
+    "mentor.years": "Yrs exp",
+    "mentor.role": "Senior Product Owner · Founder, Product Buddy",
+    "mentor.name": "Huynh Tran",
+    "mentor.bio1": "6+ years building products at international companies. Currently building B2B SaaS products at Inspectorio — a US tech company serving 12,000+ customers including Walmart, Target, Tesco, DICK'S, and Crocs. Led 4 products, drove MVPs/Pilots that won multiple deals.",
+    "mentor.bio2": "2× internal Hackathon champion with innovative ideas and awarded Employee of the Year. Founder of Product Buddy — guided 100+ freshers and career switchers into their first BA/PO roles.",
+    "mentor.stat1": "MVP deal landed",
+    "mentor.stat2": "Hackathon champion",
+    "mentor.stat3": "Mentees guided",
+    "mentor.clients": "Clients worked with",
+    "mentor.expertise": "Expertise",
+    "mentor.portfolio": "View Portfolio",
+    "modules.kicker": "Course curriculum",
+    "modules.title": '16 <span class="gradient-text">Modules</span>',
+    "modules.sub": "Live online — 16 sessions × 2 hours, twice a week (about 2 months).",
+    "modules.outcome": 'After the course, you\'ll be <span class="text-ink font-semibold">confident and ready to apply for Fresher BA/PO positions</span>.',
+    "format.kicker": "Format",
+    "format.title": 'How will you <span class="gradient-text">learn</span>?',
+    "format.1.t": "Live online classes", "format.1.d": "Not pre-recorded — direct interaction with your mentor.",
+    "format.2.t": "5–10 students per class", "format.2.d": "Small classes for close mentor attention.",
+    "format.3.t": "Real-world examples", "format.3.d": "Live case-study demos from real projects the mentor delivered at top tech companies.",
+    "format.4.t": "Flexible schedule", "format.4.d": "Class schedule agreed based on students' availability.",
+    "test.kicker": "Student feedback",
+    "test.title": 'What <span class="gradient-text">students say</span>',
+    "tuition.kicker": "Tuition",
+    "tuition.ribbon": "Early bird",
+    "tuition.original": "Original",
+    "tuition.youget": "What you get",
+    "tuition.f1": "16 live sessions × 2 hours",
+    "tuition.f2": "Detailed mentor review on every exercise",
+    "tuition.f3": "Lifetime access to course materials",
+    "tuition.f4": "Final project case study for interviews",
+    "tuition.f5": "Apply AI to your PM workflow",
+    "tuition.full": "for the full course",
+    "tuition.permonth": "≈ 2,495,000đ / month",
+    "tuition.note": "All questions answered live during class. 1-on-1 mentor support throughout the course.",
+    "finalcta.kicker": "Begin your journey",
+    "finalcta.line1": "Ready",
+    "finalcta.line2": "to start?",
+    "finalcta.sub": "Message us for a detailed consultation about the course, upcoming start dates, and to find the path that fits you best.",
+    "footer.tag": "From fresher to PO/BA"
+  }
+};
+
+let currentLang = localStorage.getItem('pb-lang');
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pb-lang', lang);
+  document.documentElement.lang = lang;
+  document.body.classList.add('lang-changing');
+  setTimeout(() => {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = I18N[lang][key];
+      if (val !== undefined) el.innerHTML = val;
+    });
+    document.getElementById('lang-toggle-label').textContent = lang === 'vi' ? 'EN' : 'VI';
+    renderModules();
+    renderTestimonials();
+    document.body.classList.remove('lang-changing');
+  }, 180);
+}
+
+document.getElementById('lang-toggle').addEventListener('click', () => {
+  applyLang(currentLang === 'vi' ? 'en' : 'vi');
+});
+
+// Lang modal
+const langModal = document.getElementById('lang-modal');
+document.querySelectorAll('[data-pick-lang]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    applyLang(btn.getAttribute('data-pick-lang'));
+    langModal.classList.remove('open');
+  });
+});
+if (!currentLang) { langModal.classList.add('open'); currentLang = 'vi'; }
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// ============== MOBILE MENU REMOVED (hamburger eliminated) ==============
+
+// ============== NAV SCROLLED STATE + MOBILE CTA ==============
+const navEl = document.getElementById('site-header');
+const mobileCtaEl = document.getElementById('mobile-cta');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  navEl.classList.toggle('scrolled', y > 30);
+  mobileCtaEl.classList.toggle('show', y > 600);
+}, { passive: true });
+
+// ============== HERO PARALLAX ==============
+const heroCard = document.getElementById('hero-card');
+const heroBlobs = document.querySelectorAll('.hero-blob');
+document.querySelector('#top').addEventListener('mousemove', (e) => {
+  if (window.innerWidth < 1024) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width - 0.5;
+  const y = (e.clientY - rect.top) / rect.height - 0.5;
+  heroBlobs.forEach((b, i) => {
+    const mult = (i + 1) * 8;
+    b.style.transform = `translate(${x * mult}px, ${y * mult}px)`;
+  });
+  if (heroCard) {
+    heroCard.style.transform = `perspective(1000px) rotateY(${-x * 4}deg) rotateX(${y * 4}deg) translateY(-4px)`;
+  }
+});
+
+// ============== STAT COUNTER ==============
+function animateCount(el) {
+  const target = parseInt(el.dataset.count);
+  const duration = 1200;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCount(e.target);
+      statObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => statObserver.observe(el));
+
+// ============== MODULES DATA ==============
+const MODULES_VI = [
+  { id: 1, title: "Giới thiệu Product Management & Lộ trình nghề nghiệp", bullets: ["Product là gì? Product Management là gì?","Cách xây dựng một sản phẩm số","Tại sao Product Management quan trọng","Liệu Product Management có bị thay thế bởi AI?","Các vai trò trong Product Management","Lộ trình nghề nghiệp","PM vs Project Management","Kỹ năng & kiến thức quan trọng cho BA/PO/PM","Mức lương thực tế của BA PO"] },
+  { id: 2, title: "Kiến thức nền tảng về Product", bullets: ["Các loại sản phẩm: B2B, B2C, Internal Tools","Các nền tảng: Web, Mobile, Desktop, API-first, VR, Smartwatch, TV…","Các loại hình công ty","Điều gì tạo nên một sản phẩm thành công?"] },
+  { id: 3, title: "Các vị trí trong Product Team", bullets: ["BA, PO, PM, Scrum Master, Tech Lead, QA, UI/UX Designer","Development Team","UX/UI Design Team","Technical Writer, CS, Data Analyst, DevOps","Cấu trúc tổ chức team Product","Lộ trình chuyển đổi sang BA PO"] },
+  { id: 4, title: "Tìm pain point & Nghiên cứu người dùng", bullets: ["Nguồn gốc các yêu cầu sản phẩm","Phỏng vấn, khảo sát, ticket, analytics","User Persona","Request & Problem Analysis","Viết Problem Statement chuẩn","Quản lý yêu cầu trên Jira (live demo)","Case study từ công ty công nghệ lớn"], exercise: "Ứng dụng kỹ năng xác định & phân tích vấn đề" },
+  { id: 5, title: "Ideation — Thiết kế tính năng & MVP", bullets: ["Ưu tiên ý tưởng (Impact vs Effort)","8 bước ideation","Competitor Research","User Flow & Wireframe","Design & Prototype","Usability Testing","Phân tích UX/UI","Xác định MVP"], exercise: "Review giải pháp, research, ideation, user flow, MVP scope" },
+  { id: 6, title: "Viết PRD & User Stories", bullets: ["PRD là gì + demo Confluence","User flow, story map, dependency map","Nội dung PRD","INVEST user story","Acceptance Criteria","Functional vs Non-functional","Epic, Spike, Task, Bug","Logging Bugs"], exercise: "Viết mini-PRD cho một feature" },
+  { id: 7, title: "Refinement, Phát triển & Prioritization", bullets: ["Backlog & Refinement","Story Point, T-shirt sizing","Planning Poker","Sprint Planning, Velocity, MoSCoW, RICE, Kano","Làm việc với Developer & QA","Sprint Review & Retro"], exercise: "Sprint Planning + xếp độ ưu tiên" },
+  { id: 8, title: "Releasing & sunset tính năng", bullets: ["Dev, Staging, Sandbox, Production","Release planning & Release Note","Release Web & Mobile App","Release control","Beta Test, A/B Testing","Release B2B vs B2C","Thu thập feedback","Khi nào sunset"], exercise: "Viết Release Note chuẩn BA PO" },
+  { id: 9, title: "Metrics, Analytics & Tracking", bullets: ["Success metrics","Cách tracking","GA, Mixpanel, Amplitude, MS Clarity","Funnel & Cohort Analysis","Data-driven decisions"], exercise: "Định nghĩa metrics, vẽ funnel" },
+  { id: 10, title: "Review Case Study thực tế", bullets: ["Case study đã nhận offer","Từng bước: bối cảnh, research, problem statement, Figma","Kinh nghiệm thực tế giải case study"] },
+  { id: 11, title: "Agile, Scrum & Chứng chỉ", bullets: ["Agile vs Waterfall","Scrum vs Kanban","Scrum Guide","Sprint, Backlog","Quản lý Sprint trên Jira","Vai trò BA/PO trong Scrum Events","Timeboxing, DoR, DoD","Dual Track Agile & Nexus","PSPO, CSPO, PMI-PBA, CBAP"], exercise: "Làm thử PSPO test" },
+  { id: 12, title: "Roadmap & Quản lý Stakeholder", bullets: ["Vẽ Roadmap chuyên nghiệp","Roadmap Prioritization & Product Goals","Thống nhất Roadmap","Giao tiếp internal stakeholder","Giao tiếp external stakeholder","Quản lý xung đột độ ưu tiên","Demo, UAT, Pilot"] },
+  { id: 13, title: "Tools trong Product Management", bullets: ["Jira, Confluence, Draw.io, Figma, Miro, Slack, Mixpanel/Analytics","Trực tiếp sử dụng các tool"], exercise: "Làm việc trên Jira, thiết kế Figma" },
+  { id: 14, title: "Ứng dụng AI trong công việc", bullets: ["Hệ sinh thái Claude (Projects, Skills, Connectors)","Thiết kế feature AI: Model, Prompt, Price, Latency, Risk","Output xác suất: hallucination, fallback, human review","AI as Translator vs AI as Engine"], exercise: "Phân tích AI feature + build Claude Skill" },
+  { id: 15, title: "Kiến thức kỹ thuật cho BA/PO", bullets: ["Website/App hoạt động thế nào","Frontend: HTML, CSS, JavaScript","Backend: ERD, Data Type, Query","API: types, Parameters, Token/Key","Browser DevTools","Vấn đề kỹ thuật phổ biến"] },
+  { id: 16, title: "Final Project", bullets: ["Thực hành toàn bộ trên vấn đề thực tế","Review & feedback chi tiết","Case study hoàn chỉnh để ứng tuyển"] },
+];
+const MODULES_EN = [
+  { id: 1, title: "Intro to Product Management & Career Path", bullets: ["What is a product? What is PM?","How a digital product is built","Why PM matters","Will it be replaced by AI?","Roles in Product Management","Career path","PM vs Project Management","Skills for BA/PO/PM","Real-world salaries"] },
+  { id: 2, title: "Product Foundations", bullets: ["B2B, B2C, Internal Tools","Web, Mobile, Desktop, API-first, VR, TV…","Company types","What makes a product successful?"] },
+  { id: 3, title: "Product Team Roles", bullets: ["BA, PO, PM, Scrum Master, Tech Lead, QA, UI/UX","Development Team","UX/UI Design Team","Technical Writer, CS, Data Analyst, DevOps","Team org structure","Transitioning to BA/PO"] },
+  { id: 4, title: "Pain points & User Research", bullets: ["Sources of product requests","Interviews, surveys, tickets, analytics","User Persona","Request & Problem Analysis","Writing Problem Statements","Managing requests in Jira (live demo)","Case studies from top tech"], exercise: "Apply problem identification & analysis" },
+  { id: 5, title: "Ideation — Feature Design & MVP", bullets: ["Impact vs Effort prioritization","8-step ideation","Competitor Research","User Flow & Wireframes","Design & Prototype","Usability Testing","UX/UI analysis","Defining MVP"], exercise: "Review solutions, research, ideation, user flow, MVP scope" },
+  { id: 6, title: "PRDs & User Stories", bullets: ["What is a PRD + Confluence demo","User flow, story map, dependency map","Inside a PRD","INVEST user stories","Acceptance Criteria","Functional vs Non-functional","Epic, Spike, Task, Bug","Logging bugs"], exercise: "Write a mini-PRD" },
+  { id: 7, title: "Refinement, Development & Prioritization", bullets: ["Backlog & Refinement","Story Point, T-shirt sizing","Planning Poker","Sprint Planning, Velocity, MoSCoW, RICE, Kano","Working with Dev & QA","Sprint Review & Retro"], exercise: "Sprint Planning + prioritization" },
+  { id: 8, title: "Releasing & Sunsetting features", bullets: ["Dev, Staging, Sandbox, Production","Release planning & Release Notes","Web vs Mobile releases","Release control","Beta & A/B Testing","B2B vs B2C releases","Post-release feedback","Sunsetting a feature"], exercise: "Write a BA/PO Release Note" },
+  { id: 9, title: "Metrics, Analytics & Tracking", bullets: ["Success metrics","How tracking works","GA, Mixpanel, Amplitude, MS Clarity","Funnel & Cohort","Data-driven decisions"], exercise: "Define metrics, draw a funnel" },
+  { id: 10, title: "Real Case Study walkthrough", bullets: ["Case study that received offer","Step-by-step: context, research, problem, Figma","Real-world insight to ace case studies"] },
+  { id: 11, title: "Agile, Scrum & Certifications", bullets: ["Agile vs Waterfall","Scrum vs Kanban","Scrum Guide","Sprint, Backlog","Jira sprint management","BA/PO in Scrum Events","Timeboxing, DoR, DoD","Dual Track Agile & Nexus","PSPO, CSPO, PMI-PBA, CBAP"], exercise: "Try a PSPO practice test" },
+  { id: 12, title: "Roadmap & Stakeholder Management", bullets: ["Drawing a professional Roadmap","Roadmap Prioritization","Aligning Roadmap","Internal stakeholders","External stakeholders","Priority conflicts","Demos, UAT, Pilots"] },
+  { id: 13, title: "Tools in PM", bullets: ["Jira, Confluence, Draw.io, Figma, Miro, Slack, Mixpanel","Hands-on practice"], exercise: "Work in Jira; design in Figma" },
+  { id: 14, title: "AI in your PM work", bullets: ["Claude ecosystem (Projects, Skills, Connectors)","Designing AI features","Probabilistic output: hallucination, fallback","AI as Translator vs AI as Engine"], exercise: "Analyze AI feature + build a Claude Skill" },
+  { id: 15, title: "Technical foundations for BA/PO", bullets: ["How websites/apps work","Frontend: HTML, CSS, JavaScript","Backend: ERD, Data Type, Query","API: types, Parameters, Token/Key","Browser DevTools","Common technical issues"] },
+  { id: 16, title: "Final Project", bullets: ["Practice everything on a real problem","Detailed review & feedback","Finished case study for job apps"] },
+];
+
+function renderModules() {
+  const list = document.getElementById('modules-list');
+  const data = currentLang === 'en' ? MODULES_EN : MODULES_VI;
+  const exerciseLabel = currentLang === 'en' ? 'Exercise' : 'Bài tập';
+  list.innerHTML = data.map((m, i) => `
+    <details class="module-row" ${i === 0 ? 'open' : ''}>
+      <summary>
+        <span class="module-num">${String(m.id).padStart(2,'0')}</span>
+        <span class="module-title">${m.title}</span>
+        <span class="module-chev">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+      </summary>
+      <div class="module-body">
+        <ul>${m.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        ${m.exercise ? `<div class="exercise-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span><strong style="font-weight:600">${exerciseLabel}:</strong> ${m.exercise}</span>
+        </div>` : ''}
+      </div>
+    </details>
+  `).join('');
+}
+
+// ============== TESTIMONIALS ==============
+const TESTIMONIALS_VI = [
+  { name: "Nguyễn Minh Anh", role: "Fresher BA", quote: "Khoá học giúp mình tự tin chuyển từ Marketing sang BA chỉ sau 2 tháng. PRD và User Flow giờ làm nhanh và chuẩn hơn rất nhiều." },
+  { name: "Trần Quang Huy", role: "Associate PO", quote: "Mình ấn tượng nhất là phần thực chiến với case study thật. Sau khoá học mình apply được 3 buổi phỏng vấn — nhận offer ngay vòng đầu." },
+  { name: "Lê Thuỳ Linh", role: "Fresher PM", quote: "Trước khoá học mình hoàn toàn mất phương hướng. Sau 2 tháng mình hiểu rõ vai trò BA/PO/PM khác nhau thế nào." },
+  { name: "Phạm Đức Tuấn", role: "Product Owner", quote: "Là dân QA chuyển ngành, mình thấy phần Agile/Scrum và quản lý backlog trên Jira được mentor giảng cực kỳ thực tế." },
+  { name: "Đặng Hồng Nhung", role: "Business Analyst", quote: "Lớp nhỏ, mentor theo sát từng bạn. Mình thích phần feedback 1-1 sau mỗi bài tập — sửa từng chỗ nhỏ trong PRD." },
+  { name: "Vũ Hải Đăng", role: "Product Manager", quote: "Từ IT chuyển sang PM. Khoá học cho mình framework rõ ràng để làm sản phẩm — và sự tự tin để ngồi đối diện stakeholder." }
+];
+const TESTIMONIALS_EN = [
+  { name: "Minh Anh Nguyen", role: "Fresher BA", quote: "Helped me confidently switch from Marketing to BA in just 2 months. Writing PRDs and user flows is now much faster and sharper." },
+  { name: "Quang Huy Tran", role: "Associate PO", quote: "The real-world case study practice was the highlight. After the course I landed 3 interviews and got an offer in the first round." },
+  { name: "Thuy Linh Le", role: "Fresher PM", quote: "I was completely lost before. After 2 months I clearly understand how BA/PO/PM differ." },
+  { name: "Duc Tuan Pham", role: "Product Owner", quote: "Coming from QA — the Agile/Scrum and Jira parts were incredibly practical." },
+  { name: "Hong Nhung Dang", role: "Business Analyst", quote: "Small class, mentor pays attention to each student. Loved the 1-on-1 feedback on every PRD detail." },
+  { name: "Hai Dang Vu", role: "Product Manager", quote: "From IT into PM. Got a clear framework — and the confidence to sit across from stakeholders." }
+];
+
+function renderTestimonials() {
+  const data = currentLang === 'en' ? TESTIMONIALS_EN : TESTIMONIALS_VI;
+  const cardBgs = [
+    'linear-gradient(135deg, #EEEAF5 0%, #fff 60%)',
+    'linear-gradient(135deg, #E0E7FF 0%, #fff 60%)',
+    'linear-gradient(135deg, #F1F3F5 0%, #fff 60%)',
+    'linear-gradient(135deg, #D1FAE5 0%, #fff 60%)',
+    'linear-gradient(135deg, #FEF3C7 0%, #fff 60%)',
+    'linear-gradient(135deg, #EEEAF5 0%, #E0E7FF 100%)'
+  ];
+  const grid = document.getElementById('testimonials-scroller');
+  grid.innerHTML = data.map((t, i) => `
+    <article class="lift" style="width: 320px; background: ${cardBgs[i % cardBgs.length]}; border: 1px solid var(--line); border-radius: 28px; padding: 28px; display: flex; flex-direction: column;">
+      <div class="flex items-center gap-1 mb-4">
+        ${[...Array(5)].map(() => `<svg width="14" height="14" viewBox="0 0 24 24" fill="#D946EF"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>`).join('')}
+      </div>
+      <p class="text-ink/85 leading-relaxed mb-7 flex-1">"${t.quote}"</p>
+      <div class="flex items-center gap-3 pt-5 border-t border-line">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white font-semibold" style="background: linear-gradient(135deg, hsl(${(i*53+260)%360}, 60%, 55%), hsl(${(i*53+300)%360}, 60%, 50%));">
+          ${t.name.split(' ').slice(-1)[0][0]}${t.name.split(' ')[0][0]}
+        </div>
+        <div>
+          <p class="display text-base leading-tight">${t.name}</p>
+          <p class="text-xs text-ink/55 mt-0.5">${t.role}</p>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+// Testimonial nav buttons
+document.getElementById('t-prev').addEventListener('click', () => {
+  const s = document.getElementById('testimonials-scroller');
+  s.scrollBy({ left: -340, behavior: 'smooth' });
+});
+document.getElementById('t-next').addEventListener('click', () => {
+  const s = document.getElementById('testimonials-scroller');
+  s.scrollBy({ left: 340, behavior: 'smooth' });
+});
+
+// ============== INIT ==============
+applyLang(currentLang || 'vi');
+
+// Reveal observer (handles both .reveal and .reveal-stagger)
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
