@@ -1164,6 +1164,7 @@ tailwind.config = {
           <span class="tag">Tesco</span>
           <span class="tag">DICK'S</span>
           <span class="tag">Crocs</span>
+          <span class="tag">Mango</span>
         </div>
 
         <!-- Expertise -->
@@ -1175,6 +1176,8 @@ tailwind.config = {
           <span class="tag">UX / Figma</span>
           <span class="tag">Data &amp; Analytics</span>
           <span class="tag">Stakeholder Mgmt</span>
+          <span class="tag" data-i18n="mentor.ftu">Foreign Trade University</span>
+          <span class="tag">IELTS 7.5</span>
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -1301,10 +1304,6 @@ tailwind.config = {
             <div class="tuition-feature">
               <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
               <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f2">Mentor review chi tiết mỗi bài tập</span>
-            </div>
-            <div class="tuition-feature">
-              <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span class="text-white/90 text-[15px] leading-snug" data-i18n="tuition.f3">Truy cập trọn đời tài liệu khoá học</span>
             </div>
             <div class="tuition-feature">
               <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
@@ -1443,6 +1442,7 @@ const I18N = {
     "mentor.stat3": "Mentee đã đồng hành",
     "mentor.clients": "Khách hàng đã làm việc cùng",
     "mentor.expertise": "Chuyên môn",
+    "mentor.ftu": "Đại học Ngoại thương",
     "mentor.portfolio": "Xem Portfolio",
     "modules.kicker": "Chi tiết nội dung khoá học",
     "modules.title": '16 <span class="gradient-text">Modules</span>',
@@ -1462,7 +1462,6 @@ const I18N = {
     "tuition.youget": "Bạn nhận được",
     "tuition.f1": "16 buổi học trực tiếp × 2 giờ",
     "tuition.f2": "Mentor review chi tiết mỗi bài tập",
-    "tuition.f3": "Truy cập trọn đời tài liệu khoá học",
     "tuition.f4": "Final project — case study mang đi phỏng vấn",
     "tuition.f5": "Ứng dụng AI vào workflow PM để bứt phá",
     "tuition.full": "toàn bộ khoá học",
@@ -1544,6 +1543,7 @@ const I18N = {
     "mentor.stat3": "Mentees guided",
     "mentor.clients": "Clients worked with",
     "mentor.expertise": "Expertise",
+    "mentor.ftu": "Foreign Trade University",
     "mentor.portfolio": "View Portfolio",
     "modules.kicker": "Course curriculum",
     "modules.title": '16 <span class="gradient-text">Modules</span>',
@@ -1563,7 +1563,6 @@ const I18N = {
     "tuition.youget": "What you get",
     "tuition.f1": "16 live sessions × 2 hours",
     "tuition.f2": "Detailed mentor review on every exercise",
-    "tuition.f3": "Lifetime access to course materials",
     "tuition.f4": "Final project case study for interviews",
     "tuition.f5": "Apply AI to your PM workflow",
     "tuition.full": "for the full course",
@@ -1756,7 +1755,7 @@ function renderTestimonials() {
   ];
   const grid = document.getElementById('testimonials-scroller');
   grid.innerHTML = data.map((t, i) => `
-    <article class="lift" style="width: 320px; background: ${cardBgs[i % cardBgs.length]}; border: 1px solid var(--line); border-radius: 28px; padding: 28px; display: flex; flex-direction: column;">
+    <article class="lift" style="width: clamp(260px, 75vw, 320px); background: ${cardBgs[i % cardBgs.length]}; border: 1px solid var(--line); border-radius: 28px; padding: 28px; display: flex; flex-direction: column;">
       <div class="flex items-center gap-1 mb-4">
         ${[...Array(5)].map(() => `<svg width="14" height="14" viewBox="0 0 24 24" fill="#D946EF"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>`).join('')}
       </div>
@@ -1778,14 +1777,41 @@ function renderTestimonials() {
 document.getElementById('t-prev').addEventListener('click', () => {
   const s = document.getElementById('testimonials-scroller');
   s.scrollBy({ left: -340, behavior: 'smooth' });
+  resetAutoScroll();
 });
 document.getElementById('t-next').addEventListener('click', () => {
   const s = document.getElementById('testimonials-scroller');
   s.scrollBy({ left: 340, behavior: 'smooth' });
+  resetAutoScroll();
 });
+
+// ============== TESTIMONIAL AUTO-SCROLL ==============
+let _tsTimer, _tsResumeTimer;
+function advanceTestimonials() {
+  const s = document.getElementById('testimonials-scroller');
+  if (!s) return;
+  if (s.scrollLeft + s.clientWidth >= s.scrollWidth - 10) {
+    s.scrollTo({ left: 0, behavior: 'smooth' });
+  } else {
+    s.scrollBy({ left: Math.min(window.innerWidth * 0.75, 340), behavior: 'smooth' });
+  }
+}
+function startAutoScroll() {
+  clearInterval(_tsTimer);
+  _tsTimer = setInterval(advanceTestimonials, 3000);
+}
+function resetAutoScroll() {
+  clearInterval(_tsTimer);
+  clearTimeout(_tsResumeTimer);
+  _tsResumeTimer = setTimeout(startAutoScroll, 5000);
+}
+const _tsEl = document.getElementById('testimonials-scroller');
+_tsEl.addEventListener('touchstart', resetAutoScroll, { passive: true });
+_tsEl.addEventListener('mousedown', resetAutoScroll, { passive: true });
 
 // ============== INIT ==============
 applyLang(currentLang || 'vi');
+startAutoScroll();
 
 // Reveal observer (handles both .reveal and .reveal-stagger)
 const io = new IntersectionObserver((entries) => {
